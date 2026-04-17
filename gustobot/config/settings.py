@@ -160,6 +160,18 @@ class Settings(BaseSettings):
         default=1000,
         description="Maximum number of cached items per namespace",
     )
+    REDIS_CHECKPOINT_PREFIX: str = Field(
+        default="langgraph:checkpoint",
+        description="Redis key prefix for LangGraph checkpoints",
+    )
+    REDIS_CHECKPOINT_TTL: int = Field(
+        default=60 * 60 * 24 * 7,
+        description="TTL for persisted LangGraph checkpoints in seconds",
+    )
+    LANGGRAPH_CHECKPOINTER_BACKEND: str = Field(
+        default="redis",
+        description="LangGraph checkpoint backend: redis or memory",
+    )
 
     # Relational database
     DATABASE_URL: str = "sqlite:///./data/gustobot.db"
@@ -305,6 +317,38 @@ class Settings(BaseSettings):
     CONVERSATION_HISTORY_MAX_MESSAGES: int = Field(
         default=200,
         description="Maximum number of messages retained per conversation",
+    )
+    CONTEXT_MAX_TOKENS: int = Field(
+        default=128000,
+        description="Total model context window used for budgeting",
+    )
+    CONTEXT_RESPONSE_RESERVE_TOKENS: int = Field(
+        default=16000,
+        description="Reserved output tokens excluded from the history budget",
+    )
+    CONTEXT_SYSTEM_RESERVE_TOKENS: int = Field(
+        default=12000,
+        description="Reserved system/tool prompt headroom excluded from the history budget",
+    )
+    CONTEXT_TRIGGER_RATIO: float = Field(
+        default=0.85,
+        description="Compression trigger ratio against the effective history budget",
+    )
+    CONTEXT_SLIDING_WINDOW_TOKENS: int = Field(
+        default=24000,
+        description="Token budget preserved as the recent sliding window",
+    )
+    CONTEXT_KEEP_LAST_TURNS: int = Field(
+        default=6,
+        description="Minimum recent user turns retained before summary compression",
+    )
+    CONTEXT_SUMMARY_MAX_TOKENS: int = Field(
+        default=2048,
+        description="Target maximum tokens for the rolling conversation summary",
+    )
+    CONTEXT_SUMMARY_MAX_CHARS: int = Field(
+        default=6000,
+        description="Hard character cap for the rolling conversation summary",
     )
 
     # CORS

@@ -10,7 +10,7 @@
 # 用于文本生成和问答
 LLM_PROVIDER=openai
 LLM_MODEL=Qwen3-30B-A3B
-LLM_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+LLM_API_KEY=your_llm_api_key_here
 LLM_BASE_URL=http://your-llm-host:8000/v1
 ```
 
@@ -22,7 +22,7 @@ LLM_BASE_URL=http://your-llm-host:8000/v1
 # 用于向量生成
 EMBEDDING_PROVIDER=openai
 EMBEDDING_MODEL=bge-m3
-EMBEDDING_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+EMBEDDING_API_KEY=your_embedding_api_key_here
 EMBEDDING_BASE_URL=http://your-embedding-host:9997/v1
 EMBEDDING_DIMENSION=1024
 ```
@@ -41,7 +41,7 @@ RERANK_PROVIDER=custom
 RERANK_BASE_URL=http://your-rerank-host:9997/v1
 RERANK_ENDPOINT=/rerank
 RERANK_MODEL=bge-reranker-large
-RERANK_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+RERANK_API_KEY=your_rerank_api_key_here
 RERANK_MAX_CANDIDATES=20
 RERANK_TOP_N=6
 RERANK_TIMEOUT=30
@@ -59,12 +59,12 @@ RERANK_SCORE_FUSION_ALPHA=0.5
 
 ### 旧配置（仍然有效）
 ```bash
-OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+OPENAI_API_KEY=your_openai_api_key_here
 OPENAI_API_BASE=http://your-llm-host:8000/v1
 OPENAI_MODEL=Qwen3-30B-A3B
 
 RERANKER_PROVIDER=custom
-RERANKER_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+RERANKER_API_KEY=your_reranker_api_key_here
 RERANKER_MODEL=bge-reranker-large
 RERANKER_API_URL=http://your-rerank-host:9997/v1
 RERANKER_TOP_K=6

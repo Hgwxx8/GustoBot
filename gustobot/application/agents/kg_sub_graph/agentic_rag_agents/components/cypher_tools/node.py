@@ -137,7 +137,7 @@ def create_cypher_query_node(
 
         NEO4J_URI="bolt://localhost"
         NEO4J_USERNAME="neo4j"
-        NEO4J_PASSWORD="Snowball2019"
+        NEO4J_PASSWORD=os.getenv("NEO4J_PASSWORD", "")
         NEO4J_DATABASE="neo4j"
 
         driver = GraphDatabase.driver(

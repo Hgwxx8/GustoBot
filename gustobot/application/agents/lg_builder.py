@@ -15,7 +15,6 @@ from gustobot.config import settings
 from gustobot.infrastructure.core.logger import get_logger
 from typing import cast, Literal, List, Dict, Any, Optional
 from langchain_core.messages import BaseMessage
-from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, StateGraph
 from gustobot.application.agents.lg_states import AgentState, InputState, Router, GradeHallucinations
 from gustobot.application.agents.kg_sub_graph.agentic_rag_agents.retrievers.cypher_examples.recipe_retriever import \
@@ -44,6 +43,7 @@ import io
 
 from langchain_openai import ChatOpenAI
 from gustobot.application.agents.kb_tools import create_knowledge_query_node, KnowledgeQueryInputState
+from gustobot.application.services.redis_checkpoint import build_graph_checkpointer
 from gustobot.infrastructure.knowledge import KnowledgeService
 class AdditionalGuardrailsOutput(BaseModel):
     """
@@ -952,7 +952,7 @@ async def check_hallucinations(
     return {"hallucination": response}
 
 
-checkpointer = MemorySaver()
+checkpointer = build_graph_checkpointer()
 
 # 定义状态图
 builder = StateGraph(AgentState, input=InputState)

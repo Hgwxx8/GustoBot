@@ -15,6 +15,7 @@ from loguru import logger
 from pydantic import BaseModel, Field
 
 from gustobot.application.agents.lg_builder import graph
+from gustobot.application.services.context_budget import get_context_budget_manager
 from gustobot.config import settings
 from gustobot.infrastructure.core.database import get_db
 from gustobot.infrastructure.persistence.crud import chat_message, chat_session
@@ -129,11 +130,15 @@ async def process_agent_query(message: str, session_id: str,
         }
     }
 
-    input_state = {
-        "messages": [{"type": "human", "content": message}]
-    }
-
     try:
+        budget_result = await get_context_budget_manager().prepare_input(
+            graph,
+            session_id=session_id,
+            user_message=message,
+            config=config,
+        )
+        input_state = {"messages": budget_result.messages}
+
         # Invoke agent graph
         result = await graph.ainvoke(input_state, config=config)
 
@@ -168,6 +173,7 @@ async def process_agent_query(message: str, session_id: str,
             "sources": sources,
             "metadata": {
                 "session_id": session_id,
+                "context_budget": budget_result.as_metadata(),
                 "agent_state": result
             }
         }

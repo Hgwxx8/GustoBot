@@ -18,7 +18,7 @@ services:
         - EMBEDDING_DIMENSION=${EMBEDDING_DIMENSION}
         - LIGHTRAG_INIT_LIMIT=${LIGHTRAG_INIT_LIMIT}
     ports:
-      - "8000:8000"
+      - "18000:8000"
     dns:
       - 8.8.8.8
       - 8.8.4.4
@@ -33,6 +33,9 @@ services:
       - REDIS_CACHE_EXPIRE=${REDIS_CACHE_EXPIRE:-43200}
       - REDIS_CACHE_THRESHOLD=${REDIS_CACHE_THRESHOLD:-0.92}
       - REDIS_CACHE_MAX_SIZE=${REDIS_CACHE_MAX_SIZE:-1000}
+      - REDIS_CHECKPOINT_PREFIX=${REDIS_CHECKPOINT_PREFIX:-langgraph:checkpoint}
+      - REDIS_CHECKPOINT_TTL=${REDIS_CHECKPOINT_TTL:-604800}
+      - LANGGRAPH_CHECKPOINTER_BACKEND=${LANGGRAPH_CHECKPOINTER_BACKEND:-redis}
 
       # 数据库配置
       - DATABASE_URL=${DATABASE_URL}
@@ -120,6 +123,14 @@ services:
       # 会话配置
       - CONVERSATION_HISTORY_TTL=${CONVERSATION_HISTORY_TTL:-259200}
       - CONVERSATION_HISTORY_MAX_MESSAGES=${CONVERSATION_HISTORY_MAX_MESSAGES:-200}
+      - CONTEXT_MAX_TOKENS=${CONTEXT_MAX_TOKENS:-128000}
+      - CONTEXT_RESPONSE_RESERVE_TOKENS=${CONTEXT_RESPONSE_RESERVE_TOKENS:-16000}
+      - CONTEXT_SYSTEM_RESERVE_TOKENS=${CONTEXT_SYSTEM_RESERVE_TOKENS:-12000}
+      - CONTEXT_TRIGGER_RATIO=${CONTEXT_TRIGGER_RATIO:-0.85}
+      - CONTEXT_SLIDING_WINDOW_TOKENS=${CONTEXT_SLIDING_WINDOW_TOKENS:-24000}
+      - CONTEXT_KEEP_LAST_TURNS=${CONTEXT_KEEP_LAST_TURNS:-6}
+      - CONTEXT_SUMMARY_MAX_TOKENS=${CONTEXT_SUMMARY_MAX_TOKENS:-2048}
+      - CONTEXT_SUMMARY_MAX_CHARS=${CONTEXT_SUMMARY_MAX_CHARS:-6000}
 
       # 外部服务配置
       - INGEST_SERVICE_URL=${INGEST_SERVICE_URL:-http://kb_ingest:8000}
@@ -140,9 +151,14 @@ services:
       - ./uploads:/app/uploads
       - ./.env:/app/.env
     depends_on:
-      - neo4j
-      - redis
-      - milvus
+      neo4j:
+        condition: service_started
+      redis:
+        condition: service_started
+      milvus:
+        condition: service_started
+      kb_ingest:
+        condition: service_healthy
     networks:
       - gustobot-network
     restart: unless-stopped
@@ -185,7 +201,7 @@ services:
       - gustobot-network
 
   redis:
-    image: redis:7-alpine
+    image: redis/redis-stack-server:7.4.0-v6
     ports:
       - "6379:6379"
     volumes:
@@ -314,6 +330,12 @@ services:
     volumes:
       - ./kb_ingest/data:/app/data
     command: uvicorn kb_service.main:app --host 0.0.0.0 --port 8000
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3).read()"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
     networks:
       - gustobot-network
 

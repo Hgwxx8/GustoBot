@@ -266,13 +266,13 @@ docker-compose logs -f milvus-standalone
 ```bash
 # 测试 Embedding 服务
 curl -X POST "http://your-embedding-host:9997/v1/embeddings" \
-  -H "Authorization: Bearer sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
+  -H "Authorization: Bearer your_api_key_here" \
   -H "Content-Type: application/json" \
   -d '{"model": "bge-m3", "input": "测试文本"}' | jq
 
 # 测试 Reranker 服务
 curl -X POST "http://your-rerank-host:9997/v1/rerank" \
-  -H "Authorization: Bearer sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
+  -H "Authorization: Bearer your_api_key_here" \
   -H "Content-Type: application/json" \
   -d '{
     "model": "bge-reranker-large",
@@ -283,7 +283,7 @@ curl -X POST "http://your-rerank-host:9997/v1/rerank" \
 
 # 测试 LLM 服务
 curl -X POST "http://your-llm-host:8000/v1/chat/completions" \
-  -H "Authorization: Bearer sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
+  -H "Authorization: Bearer your_api_key_here" \
   -H "Content-Type: application/json" \
   -d '{
     "model": "Qwen3-30B-A3B",
@@ -416,7 +416,7 @@ docker-compose logs -f backend | grep -i embedding
 ```bash
 # 1. 测试 Reranker 端点
 curl -X POST "http://your-rerank-host:9997/v1/rerank" \
-  -H "Authorization: Bearer sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
+  -H "Authorization: Bearer your_api_key_here" \
   -H "Content-Type: application/json" \
   -d '{"model": "bge-reranker-large", "query": "test", "documents": ["doc1"], "top_n": 1}'
 
